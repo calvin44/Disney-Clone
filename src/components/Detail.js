@@ -1,38 +1,67 @@
-import React from 'react'
+import React, { useEffect, useState, Fragment } from 'react'
 import styled from 'styled-components'
+import { useParams } from 'react-router-dom'
+import db from '../firebase'
+
 
 const Detail = () => {
+    const { id } = useParams()
+    const [movie, setMovie] = useState()
+
+    useEffect(() => {
+        // Grab movie info from db
+        db.collection("movies")
+            .doc(id)
+            .get()
+            .then(doc => {
+                if (doc.exists) {
+                    setMovie(doc.data())
+                } else {
+                    // redirect home page
+
+                }
+            })
+    }, [id])
+
+    console.log(movie)
     return (
         <Container>
-            <Background>
-                <img
-                    src="https://d23.com/app/uploads/2018/05/1180w-600h_052918_bao-short-info-from-pixar-day-780x440.jpg" alt="" />
-            </Background>
-            <ImageTitle>
-                <img src="https://prod-ripcut-delivery.disney-plus.net/v1/variant/disney/D7AEE1F05D10FC37C873176AAA26F777FC1B71E7A6563F36C6B1B497CAB1CEC2/scale?width=1344&aspectRatio=1.78" alt="" />
-            </ImageTitle>
-            <Controls>
-                <PlayButton>
-                    <img src="/images/play-icon-black.png" alt="" />
-                    <span>PLAY</span>
-                </PlayButton>
-                <TrailerButton>
-                    <img src="/images/play-icon-white.png" alt="" />
-                    <span>TRAILER</span>
-                </TrailerButton>
-                <AddButton>
-                    <span>+</span>
-                </AddButton>
-                <GroupWatchButton>
-                    <img src="/images/group-icon.png" alt="" />
-                </GroupWatchButton>
-            </Controls>
-            <SubTitle>
-                2018 - 7m - Family - Fantasy - Kids - Animation
-            </SubTitle>
-            <Description>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-            </Description>
+            {
+                movie && (
+                    <Fragment>
+                        <Background>
+                            <img
+                                src={movie.backgroundImg} alt="" />
+                        </Background>
+                        <ImageTitle>
+                            <img src={movie.titleImg} alt="" />
+                        </ImageTitle>
+                        <Controls>
+                            <PlayButton>
+                                <img src="/images/play-icon-black.png" alt="" />
+                                <span>PLAY</span>
+                            </PlayButton>
+                            <TrailerButton>
+                                <img src="/images/play-icon-white.png" alt="" />
+                                <span>TRAILER</span>
+                            </TrailerButton>
+                            <AddButton>
+                                <span>+</span>
+                            </AddButton>
+                            <GroupWatchButton>
+                                <img src="/images/group-icon.png" alt="" />
+                            </GroupWatchButton>
+                        </Controls>
+                        <SubTitle>
+                            {movie.subTitle}
+                        </SubTitle>
+                        <Description>
+                            {movie.description}
+                        </Description>
+                    </Fragment>
+                )
+            }
+
         </Container>
     )
 }
@@ -67,7 +96,7 @@ const ImageTitle = styled.div`
     min-height: 170px;
     min-width: 200px;
     margin-top: 60px;
-    
+
     img {
         width: 100%;
         height: 100%;

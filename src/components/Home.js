@@ -4,20 +4,29 @@ import ImgSlider from './ImgSlider'
 import Movies from './Movies'
 import Viewers from './Viewers'
 import db from '../firebase'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setMovies } from '../features/movie/movieSlice'
+import { selectUserName } from '../features/user/userSlice'
+import { useHistory } from 'react-router'
 
 const Home = () => {
     const dispatch = useDispatch()
+    const userName = useSelector(selectUserName)
+    const history = useHistory()
+
 
     useEffect(() => {
+        if (!userName) {
+            history.push("/Login")
+        }
+
         db.collection('movies').onSnapshot((snapshot) => {
             const tempMovies = snapshot.docs.map((doc) => {
                 return { id: doc.id, ...doc.data() }
             })
             dispatch(setMovies(tempMovies))
         })
-    }, [dispatch])
+    }, [dispatch, history, userName])
 
     return (
         <Container>
